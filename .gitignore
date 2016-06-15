@@ -250,3 +250,6 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# These get generated automatically
+SecretsVault/SecretsVault.nuspec
