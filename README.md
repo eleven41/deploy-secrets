@@ -87,7 +87,7 @@ Configuration of the vault (for both the assembly and the command-line utility) 
 
 The following `appSettings` should be configured:
 
-* vault:KmsKeyId - **(Required)** The ID of the key used to encrypt and decrypt values. This usually looks like a GUID.
+* vault:KmsKeyId - **(Conditional)** The ID of the key used to encrypt values. This usually looks like a GUID. Only required to put key/values.
 * vault:BucketName - **(Required)** Name of the bucket to store the key/values.
 * vault:Prefix - (Optional) Prefix to use for the S3 object keys when stored in the bucket. For example, "settings/".
 

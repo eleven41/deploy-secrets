@@ -86,7 +86,7 @@ namespace Vault
 
 		private static async Task GetSetting(GetOptions options, ILog log)
 		{
-			Config config = Config.LoadFromAppSettings(log);
+			Config config = Config.LoadFromAppSettingsAndVerify(false, log);
 			if (!String.IsNullOrEmpty(options.Region))
 			{
 				log.Log(LogLevels.Diagnostic, "Region: {0}", options.Region);
@@ -100,7 +100,7 @@ namespace Vault
 
 		private static async Task DeleteSetting(DeleteOptions options, ILog log)
 		{
-			Config config = Config.LoadFromAppSettings(log);
+			Config config = Config.LoadFromAppSettingsAndVerify(false, log);
 			if (!String.IsNullOrEmpty(options.Region))
 			{
 				log.Log(LogLevels.Diagnostic, "Region: {0}", options.Region);
@@ -113,7 +113,7 @@ namespace Vault
 
 		private static async Task PutSetting(PutOptions options, ILog log)
 		{
-			Config config = Config.LoadFromAppSettings(log);
+			Config config = Config.LoadFromAppSettingsAndVerify(true, log);
 			if (!String.IsNullOrEmpty(options.Region))
 			{
 				log.Log(LogLevels.Diagnostic, "Region: {0}", options.Region);
@@ -126,7 +126,7 @@ namespace Vault
 
 		private static async Task PutBatch(PutBatchOptions options, ILog log)
 		{
-			Config config = Config.LoadFromAppSettings(log);
+			Config config = Config.LoadFromAppSettingsAndVerify(true, log);
 			if (!String.IsNullOrEmpty(options.Region))
 			{
 				log.Log(LogLevels.Diagnostic, "Region: {0}", options.Region);

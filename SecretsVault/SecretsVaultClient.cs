@@ -42,6 +42,9 @@ namespace SecretsVault
 				throw new ArgumentOutOfRangeException("key");
 			key = key.Trim();
 
+			if (String.IsNullOrWhiteSpace(_config.BucketName))
+				throw new ArgumentOutOfRangeException("config.BucketName");
+
 			string json = Eleven41.Helpers.JsonHelper.Serialize(new KeyValue()
 				{
 					Value = value
@@ -67,6 +70,9 @@ namespace SecretsVault
 				throw new ArgumentOutOfRangeException("key");
 			key = key.Trim();
 
+			if (String.IsNullOrWhiteSpace(_config.BucketName))
+				throw new ArgumentOutOfRangeException("config.BucketName");
+
 			// Get the blob
 			string objectKey = String.Format("{0}{1}", _config.Prefix, key);
 
@@ -85,6 +91,9 @@ namespace SecretsVault
 			if (String.IsNullOrWhiteSpace(key))
 				throw new ArgumentOutOfRangeException("key");
 			key = key.Trim();
+
+			if (String.IsNullOrWhiteSpace(_config.BucketName))
+				throw new ArgumentOutOfRangeException("config.BucketName");
 
 			// Delete the object
 			string objectKey = String.Format("{0}{1}", _config.Prefix, key);
@@ -129,6 +138,9 @@ namespace SecretsVault
 
 		private async Task<MemoryStream> Encrypt(string value, Amazon.KeyManagementService.IAmazonKeyManagementService client)
 		{
+			if (String.IsNullOrWhiteSpace(_config.KmsKeyId))
+				throw new ArgumentOutOfRangeException("config.KmsKeyId");
+			
 			using (MemoryStream memoryStream = new MemoryStream())
 			{
 				using (var writer = new StreamWriter(memoryStream, Encoding.UTF8))
