@@ -42,13 +42,15 @@ namespace SecretsVault
 				throw new ArgumentOutOfRangeException("key");
 			key = key.Trim();
 
-			if (String.IsNullOrEmpty(value))
-				throw new ArgumentOutOfRangeException("value");
+			string json = Eleven41.Helpers.JsonHelper.Serialize(new KeyValue()
+				{
+					Value = value
+				});
 
 			// Encrypt the value
 			var kmsClient = CreateKmsClient();
 			log.Log(LogLevels.Info, "Encrypting {0}...", key);
-			var encryptedStream = await Encrypt(value, kmsClient);
+			var encryptedStream = await Encrypt(json, kmsClient);
 			encryptedStream.Seek(0, SeekOrigin.Begin);
 
 			// Upload the blob
@@ -73,7 +75,9 @@ namespace SecretsVault
 			var encryptedStream = await Download(objectKey, s3Client);
 
 			var kmsClient = CreateKmsClient();
-			return await Decrypt(encryptedStream, kmsClient);
+			string json = await Decrypt(encryptedStream, kmsClient);
+
+			return Eleven41.Helpers.JsonHelper.Deserialize<KeyValue>(json).Value;
 		}
 
 		private async Task<Stream> Download(string objectKey, Amazon.S3.IAmazonS3 s3Client)
@@ -143,6 +147,11 @@ namespace SecretsVault
 					return await reader.ReadToEndAsync();
 				}
 			}
+		}
+
+		class KeyValue
+		{
+			public string Value { get; set; }
 		}
 	}
 }
