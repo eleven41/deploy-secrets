@@ -8,7 +8,7 @@ using Eleven41.Logging;
 
 namespace SecretsVault
 {
-	public class SecretsVaultClient
+	public class SecretsVaultClient : ISecretsVaultClient
 	{
 		Config _config;
 
@@ -78,6 +78,27 @@ namespace SecretsVault
 			string json = await Decrypt(encryptedStream, kmsClient);
 
 			return Eleven41.Helpers.JsonHelper.Deserialize<KeyValue>(json).Value;
+		}
+
+		public async Task DeleteAsync(string key, ILog log)
+		{
+			if (String.IsNullOrWhiteSpace(key))
+				throw new ArgumentOutOfRangeException("key");
+			key = key.Trim();
+
+			// Delete the object
+			string objectKey = String.Format("{0}{1}", _config.Prefix, key);
+
+			var s3Client = CreateS3Client();
+			log.Log(LogLevels.Info, "Deleting {0} from s3://{1}/{2}", key, _config.BucketName, objectKey);
+
+			var request = new Amazon.S3.Model.DeleteObjectRequest()
+			{
+				BucketName = _config.BucketName,
+				Key = objectKey
+			};
+
+			var response = await s3Client.DeleteObjectAsync(request);
 		}
 
 		private async Task<Stream> Download(string objectKey, Amazon.S3.IAmazonS3 s3Client)

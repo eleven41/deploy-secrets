@@ -11,6 +11,7 @@ secrets-vault is a .NET library and command-line EXE to store key/value pairs in
 * Create an S3 bucket. Note it's bucket name.
 * Create, or have available, an IAM role or user to administer the key/values. Permissions required:
   * kms:Encrypt
+  * s3:DeleteObject
   * s3:PutObject
 * Create, or have available, an IAM role or user to retrieve key values. Permissions required:
   * kms:Decrypt
@@ -72,6 +73,7 @@ $ vault put --key empty-value --value ""
 #### Verbs
 
 * create-batch-file - Creates a skeleten batch file to mass load keys into the vault using `put-batch`. The file is a JSON file.
+* delete - Deletes a key and value from the vault.
 * get - Retrieves a value from the vault.
 * put - Puts a value in the vault.
 * put-batch - Puts many values into the vault from a file. The file is a JSON file and should be generated using
@@ -115,6 +117,7 @@ The AWS IAM user or role used to **put** values, requires the following policy:
             "Effect": "Allow",
             "Action": [
                 "kms:Encrypt",
+                "s3:DeleteObject",
                 "s3:PutObject"
             ],
             "Resource": [

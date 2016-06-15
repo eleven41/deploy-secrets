@@ -59,6 +59,11 @@ namespace Vault
 					var getOptions = (GetOptions)invokedVerbInstance;
 					await GetSetting(getOptions, log);
 				}
+				else if (invokedVerb == "delete")
+				{
+					var deleteOptions = (DeleteOptions)invokedVerbInstance;
+					await DeleteSetting(deleteOptions, log);
+				}
 
 			}
 			catch (Exception e)
@@ -91,6 +96,19 @@ namespace Vault
 			var client = new SecretsVaultClient(config);
 			string value = await client.GetAsync(options.Key, log);
 			log.Log(LogLevels.Info, "Value: {0}", value);
+		}
+
+		private static async Task DeleteSetting(DeleteOptions options, ILog log)
+		{
+			Config config = Config.LoadFromAppSettings(log);
+			if (!String.IsNullOrEmpty(options.Region))
+			{
+				log.Log(LogLevels.Diagnostic, "Region: {0}", options.Region);
+				config.RegionName = options.Region;
+			}
+
+			var client = new SecretsVaultClient(config);
+			await client.DeleteAsync(options.Key, log);
 		}
 
 		private static async Task PutSetting(PutOptions options, ILog log)
@@ -187,6 +205,9 @@ namespace Vault
 		[VerbOption("create-batch-file", HelpText = "Creates a skeleton batch file.")]
 		public CreateBatchFileOptions CreateBatchFileVerb { get; set; }
 
+		[VerbOption("delete", HelpText = "Delete a key and value from the vault.")]
+		public DeleteOptions DeleteVerb { get; set; }
+
 		[VerbOption("get", HelpText = "Get a key's value from the vault.")]
 		public GetOptions GetVerb { get; set; }
 
@@ -234,6 +255,20 @@ namespace Vault
 	}
 
 	class GetOptions : CommonOptions
+	{
+		[Option('k', "key", Required = true,
+			HelpText = "Setting key.")]
+		public string Key { get; set; }
+
+		[HelpOption]
+		public string GetUsage()
+		{
+			return HelpText.AutoBuild(this,
+			  (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+		}
+	}
+
+	class DeleteOptions : CommonOptions
 	{
 		[Option('k', "key", Required = true,
 			HelpText = "Setting key.")]
