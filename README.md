@@ -7,23 +7,32 @@ secrets-vault is a .NET library and command-line EXE to store key/value pairs in
 
 ## Getting Started
 
-* Create a KMS key. Note it's key ID. This will look like a GUID.
-* Create an S3 bucket. Note it's bucket name.
-* Create, or have available, an IAM role or user to administer the key/values. Permissions required:
-  * kms:Encrypt
-  * s3:DeleteObject
-  * s3:PutObject
-* Create, or have available, an IAM role or user to retrieve key values. Permissions required:
-  * kms:Decrypt
-  * s3:GetObject
+[SecretsVault.template](CloudFormationTemplates/SecretsVault.template) is a CloudFormation template you can use to build a stack for your vault. The stack includes:
 
-## Assembly to Use In Your Application
+* An S3 bucket to store your key values. This bucket:
+  * Enforces AES256 encryption-at-rest.
+  * Enforces HTTPS when getting and putting values.
+* A KMS key to encrypt and decrypt the data.
+* Two IAM Managed Policies to assign to your users and roles:
+  * One "Admin" policy with "put" and "delete" permissions.
+  * One "User" policy with "get" permissions.
+
+## .NET Assembly to Use In Your Application
 
 ### Installation
 
 Install from NuGet
 
     Install-Package secrets-vault
+
+### Sample Code
+
+```csharp
+var log = new ConsoleLog();
+Config config = Config.LoadFromAppSettingsAndVerify(false, log);
+var client = new SecretsVaultClient(config);
+string value = await client.GetAsync("my-key", log);
+```
 
 ## Command-Line Utility
 
@@ -106,7 +115,7 @@ AWS client configuration (such as access keys, etc.)
 
 ## AWS IAM Policies
 
-The AWS IAM user or role used to **put** values, requires the following policy:
+The AWS IAM user or role used to **put and delete** values, requires the following policy:
 
 ```json
 {
@@ -148,3 +157,10 @@ The AWS IAM user or role used to **get** values, requires the following policy:
     ]
 }
 ```
+
+## Tips
+
+To improve security of your S3 buckets and KMS keys:
+
+* Add statements to the S3 bucket policy and KMS key policy that restrict access to specific principals. These can only be IAM users, IAM roles, and AWS account roots.
+
