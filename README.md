@@ -1,5 +1,7 @@
 # secrets-vault
 
+[![Build status](https://ci.appveyor.com/api/projects/status/axosgggj2xauwl2m?svg=true)](https://ci.appveyor.com/project/eleven41/secrets-vault)
+
 secrets-vault is a .NET library and command-line EXE to store key/value pairs in a secure vault.
 
 * [Amazon KMS](http://aws.amazon.com/kms/) is used to encrypt/decrypt the values.
